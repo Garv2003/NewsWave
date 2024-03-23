@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NewsItem from "../NewsItem/NewsItem";
-// import axios from "axios";
-import Carousels from "../Carousels";
+import axios from "axios";
+// import Carousels from "../Carousels";
 import data from "../../assets/data";
 
 const News = () => {
@@ -18,6 +18,18 @@ const News = () => {
   // const updateNews = async (pagecurr) => {
   const updateNews = async () => {
     setLoading(true);
+
+    const data = await axios.get(
+      "https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1"
+    );
+
+    console.log(data);
+
+    const data1 = axios.get(
+      "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
+    );
+    console.log(data1);
+
     // axios
     //   .get(
     //     // `https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1&page=${pagecurr}&pageSize=12`
@@ -59,7 +71,7 @@ const News = () => {
     <div className="container my-3">
       <h1 className="text-center">NewsWave - Top Headlines</h1>
       {loading && <h2 className="text-center">Loading...</h2>}
-      <Carousels />
+      {/* <Carousels /> */}
       <div className="row mt-4">
         {news.map((element, i) => {
           return (
