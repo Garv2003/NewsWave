@@ -19,12 +19,12 @@ const News = () => {
   const updateNews = async () => {
     setLoading(true);
 
-    const data1 = await axios.get(
-      "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
-    );
-    console.log(data1);
+    // const data1 = await axios.get(
+    //   "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
+    // );
+    // console.log(data1);
 
-    const data = await .get(
+    const data = await axios.get(
       "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&page=10&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#"
     );
 
@@ -67,46 +67,47 @@ const News = () => {
   };
 
   return (
-    <div className="container my-3">
-      <h1 className="text-center">NewsWave - Top Headlines</h1>
-      {loading && <h2 className="text-center">Loading...</h2>}
-      {/* <Carousels /> */}
-      <div className="row mt-4">
-        {news.map((element, i) => {
-          return (
-            <div className="col-md-4" key={i}>
-              <NewsItem
-                title={element.title ? element.title : ""}
-                description={element.description ? element.description : ""}
-                imageurl={element.image_url}
-                newsUrl={element.link}
-                author={element?.creator}
-                date={element.pubDate}
-                source={element.source_id}
-              />
-            </div>
-          );
-        })}
-      </div>
-      <div className="container d-flex justify-content-between">
-        <button
-          disabled={page <= 1}
-          type="button"
-          className="btn btn-dark"
-          onClick={() => handlePrevClick()}
-        >
-          &larr; Previous
-        </button>
-        <button
-          disabled={page + 1 > Math.ceil(totalResults / 12)}
-          type="button"
-          className="btn btn-dark"
-          onClick={() => handleNextClick()}
-        >
-          Next &rarr;
-        </button>
-      </div>
-    </div>
+    <div></div>
+    // <div className="container my-3">
+    //   <h1 className="text-center">NewsWave - Top Headlines</h1>
+    //   {loading && <h2 className="text-center">Loading...</h2>}
+    //   {/* <Carousels /> */}
+    //   <div className="row mt-4">
+    //     {news.map((element, i) => {
+    //       return (
+    //         <div className="col-md-4" key={i}>
+    //           <NewsItem
+    //             title={element.title ? element.title : ""}
+    //             description={element.description ? element.description : ""}
+    //             imageurl={element.image_url}
+    //             newsUrl={element.link}
+    //             author={element?.creator}
+    //             date={element.pubDate}
+    //             source={element.source_id}
+    //           />
+    //         </div>
+    //       );
+    //     })}
+    //   </div>
+    //   <div className="container d-flex justify-content-between">
+    //     <button
+    //       disabled={page <= 1}
+    //       type="button"
+    //       className="btn btn-dark"
+    //       onClick={() => handlePrevClick()}
+    //     >
+    //       &larr; Previous
+    //     </button>
+    //     <button
+    //       disabled={page + 1 > Math.ceil(totalResults / 12)}
+    //       type="button"
+    //       className="btn btn-dark"
+    //       onClick={() => handleNextClick()}
+    //     >
+    //       Next &rarr;
+    //     </button>
+    //   </div>
+    // </div>
   );
 };
 
