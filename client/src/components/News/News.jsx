@@ -18,6 +18,7 @@ const News = () => {
       const data = await axios.get(
         `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=general&page=${page}&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#`
       );
+      console.log(data);
       setNews(data.data.response.docs);
       setLoading(false);
     } catch (error) {
