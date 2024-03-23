@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import NewsItem from "../NewsItem/NewsItem";
-import axios from "axios";
-import InfiniteScroll from "react-infinite-scroll-component";
+// import axios from "axios";
+import Carousels from "../Carousels";
+import data from "../../assets/data";
 
 const News = () => {
   const [news, setNews] = useState([]);
@@ -17,19 +18,24 @@ const News = () => {
   // const updateNews = async (pagecurr) => {
   const updateNews = async () => {
     setLoading(true);
-    axios
-      .get(
-        // `https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1&page=${pagecurr}&pageSize=12`
-        `https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en&size=${Size}`
-      )
-      .then((response) => {
-        // setNews(response.data.articles);
-        setNews((news) => [...news, ...response.data.results]);
-        setTotalResults(response.data.totalResults);
-        setSize(10);
-        setPage(response.data.nextPage);
-        setLoading(false);
-      });
+    // axios
+    //   .get(
+    //     // `https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1&page=${pagecurr}&pageSize=12`
+    //     `https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en&size=${Size}`
+    //   )
+    //   .then((response) => {
+    //     // setNews(response.data.articles);
+    //     setNews((news) => [...news, ...response.data.results]);
+    //     setTotalResults(response.data.totalResults);
+    //     setSize(10);
+    //     setPage(response.data.nextPage);
+    //     setLoading(false);
+    //   });
+    setNews(data.results);
+    setTotalResults(data.totalResults);
+    setSize(10);
+    setPage(data.nextPage);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -39,47 +45,39 @@ const News = () => {
     updateNews();
   }, []);
 
-  // const handlePrevClick = async () => {
-  //   setPage((page) => page - 1);
-  //   updateNews(page - 1);
-  // };
+  const handlePrevClick = async () => {
+    setPage((page) => page - 1);
+    updateNews(page - 1);
+  };
 
-  // const handleNextClick = async () => {
-  //   setPage((page) => page + 1);
-  //   updateNews(page + 1);
-  // };
+  const handleNextClick = async () => {
+    setPage((page) => page + 1);
+    updateNews(page + 1);
+  };
 
   return (
     <div className="container my-3">
       <h1 className="text-center">NewsWave - Top Headlines</h1>
       {loading && <h2 className="text-center">Loading...</h2>}
-
-      <InfiniteScroll
-        dataLength={news.length}
-        next={updateNews}
-        style={{ overflow: "hidden" }}
-        hasMore={news.length < totalResults}
-        loader={<h4>Loading...</h4>}
-      >
-        <div className="row mt-4">
-          {news.map((element, i) => {
-            return (
-              <div className="col-md-4" key={i}>
-                <NewsItem
-                  title={element.title ? element.title : ""}
-                  description={element.description ? element.description : ""}
-                  imageurl={element.image_url}
-                  newsUrl={element.link}
-                  author={element?.creator}
-                  date={element.pubDate}
-                  source={element.source_id}
-                />
-              </div>
-            );
-          })}
-        </div>
-      </InfiniteScroll>
-      {/* <div className="container d-flex justify-content-between">
+      <Carousels />
+      <div className="row mt-4">
+        {news.map((element, i) => {
+          return (
+            <div className="col-md-4" key={i}>
+              <NewsItem
+                title={element.title ? element.title : ""}
+                description={element.description ? element.description : ""}
+                imageurl={element.image_url}
+                newsUrl={element.link}
+                author={element?.creator}
+                date={element.pubDate}
+                source={element.source_id}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <div className="container d-flex justify-content-between">
         <button
           disabled={page <= 1}
           type="button"
@@ -96,7 +94,7 @@ const News = () => {
         >
           Next &rarr;
         </button>
-      </div> */}
+      </div>
     </div>
   );
 };
