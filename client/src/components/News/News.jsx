@@ -19,12 +19,12 @@ const News = () => {
   const updateNews = async () => {
     setLoading(true);
 
-    const data1 = axios.get(
+    const data1 = await axios.get(
       "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
     );
     console.log(data1);
 
-    const data = axios.get(
+    const data = await .get(
       "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&page=10&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#"
     );
 
