@@ -1,58 +1,50 @@
-import React from "react";
-import { Navbar, Nav, Button } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
+import Form from "react-bootstrap/Form";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
+import NavDropdown from "react-bootstrap/NavDropdown";
 import { Link } from "react-router-dom";
 
 const NavBar = () => {
   return (
-    <Navbar
-      collapseOnSelect
-      expand="lg"
-      bg="dark"
-      variant="dark"
-      className="px-3"
-    >
-      <Navbar.Brand>
-        <Link to="/" className="navbar-brand">
-          NewsWave
-        </Link>
-      </Navbar.Brand>
-      <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-      <Navbar.Collapse
-        id="responsive-navbar-nav"
-        className="justify-content-between"
-      >
-        <Nav>
-          <Link to="/business" className="nav-link">
-            Business
-          </Link>
-          <Link to="/entertainment" className="nav-link">
-            Entertainment
-          </Link>
-          <Link to="/general" className="nav-link">
-            General
-          </Link>
-          <Link to="/health" className="nav-link">
-            Health
-          </Link>
-          <Link to="/science" className="nav-link">
-            Science
-          </Link>
-          <Link to="/sports" className="nav-link">
-            Sports
-          </Link>
-          <Link to="/technology" className="nav-link">
-            Technology
-          </Link>
-        </Nav>
-        <Nav className="">
-          <Link to="/login" className="nav-link">
-            <Button>Login</Button>
-          </Link>
-          <Link to="/signup" className="nav-link">
-            <Button>Signup</Button>
-          </Link>
-        </Nav>
-      </Navbar.Collapse>
+    <Navbar expand="lg" className="bg-body-tertiary">
+      <Container fluid>
+        <Navbar.Brand href="#">Navbar scroll</Navbar.Brand>
+        <Navbar.Toggle aria-controls="navbarScroll" />
+        <Navbar.Collapse id="navbarScroll">
+          <Nav
+            className="me-auto my-2 my-lg-0"
+            style={{ maxHeight: "100px" }}
+            navbarScroll
+          >
+            <Nav.Link href="#action1">Home</Nav.Link>
+            <Nav.Link href="#action2">Link</Nav.Link>
+            <NavDropdown title="Link" id="navbarScrollingDropdown">
+              <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
+              <NavDropdown.Item href="#action4">
+                Another action
+              </NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#action5">
+                Something else here
+              </NavDropdown.Item>
+            </NavDropdown>
+            <Nav.Link href="#" disabled>
+              Link
+            </Nav.Link>
+          </Nav>
+          <Form className="d-flex">
+            <Form.Control
+              type="search"
+              placeholder="Search"
+              className="me-2"
+              aria-label="Search"
+            />
+            <Button variant="outline-success">Search</Button>
+          </Form>
+        </Navbar.Collapse>
+      </Container>
     </Navbar>
   );
 };

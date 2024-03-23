@@ -1,33 +1,33 @@
 import { Link } from "react-router-dom";
-import styles from "../../styles/Login.module.css";
+import Button from "react-bootstrap/Button";
+import Form from "react-bootstrap/Form";
 
 const Login = () => {
-  const body = document.querySelector("body");
-  body.classList.remove("signup");
-
   return (
-    <div className={styles.container}>
-      <span></span>
-      <span></span>
-      <span></span>
-      <form id="signinform">
-        <h1>Login</h1>
-        <div className="inputBox">
-          <input type="text" name="Username" placeholder="Username" required />
-        </div>
-        <div className="inputBox">
-          <input type="text" name="Password" placeholder="Password" required />
-        </div>
-        <div className="inputBox group">
-          <Link href="#">Forgot Password</Link>
-          <Link to="/signup" id="signup">
-            Signup
-          </Link>
-        </div>
-        <div className="inputBox">
-          <input type="submit" placeholder="Login In" />
-        </div>
-      </form>
+    <div
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "100vh" }}
+    >
+      <Form className="border border-primary p-3 rounded">
+        <Form.Group className="mb-3" controlId="formBasicEmail">
+          <Form.Label>Email address</Form.Label>
+          <Form.Control type="email" placeholder="Enter email" />
+          <Form.Text className="text-muted">
+            We'll never share your email with anyone else.
+          </Form.Text>
+        </Form.Group>
+
+        <Form.Group className="mb-3" controlId="formBasicPassword">
+          <Form.Label>Password</Form.Label>
+          <Form.Control type="password" placeholder="Password" />
+        </Form.Group>
+        <Form.Group className="mb-3" controlId="formBasicCheckbox">
+          <Form.Check type="checkbox" label="Check me out" />
+        </Form.Group>
+        <Button variant="primary" type="submit">
+          Submit
+        </Button>
+      </Form>
     </div>
   );
 };

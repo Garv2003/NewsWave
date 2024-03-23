@@ -1,52 +1,30 @@
 import { useEffect, useState } from "react";
 import NewsItem from "../NewsItem/NewsItem";
 import axios from "axios";
-// import Carousels from "../Carousels";
-import data from "../../assets/data";
 
 const News = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState("");
-  const [Size, setSize] = useState(10);
-  const [totalResults, setTotalResults] = useState(0);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  // const updateNews = async (pagecurr) => {
   const updateNews = async () => {
-    setLoading(true);
-
-    // const data1 = await axios.get(
-    //   "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
-    // );
-    // console.log(data1);
-
-    const data = await axios.get(
-      "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&page=10&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#"
-    );
-
-    console.log(data);
-
-    // axios
-    //   .get(
-    //     `https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en&size=${Size}`
-    //   )
-    //   .then((response) => {
-    //     // setNews(response.data.articles);
-    //     setNews((news) => [...news, ...response.data.results]);
-    //     setTotalResults(response.data.totalResults);
-    //     setSize(10);
-    //     setPage(response.data.nextPage);
-    //     setLoading(false);
-    //   });
-    setNews(data.results);
-    setTotalResults(data.totalResults);
-    setSize(10);
-    setPage(data.nextPage);
-    setLoading(false);
+    try {
+      setLoading(true);
+      const data = await axios.get(
+        `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=general&page=${page}&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#`
+      );
+      setNews(data.data.response.docs);
+      setLoading(false);
+    } catch (error) {
+      setNews([]);
+      setLoading(false);
+      setError("Something went wrong! Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -58,56 +36,73 @@ const News = () => {
 
   const handlePrevClick = async () => {
     setPage((page) => page - 1);
-    updateNews(page - 1);
+    updateNews();
+    window.scrollTo(0, 0);
   };
 
   const handleNextClick = async () => {
     setPage((page) => page + 1);
-    updateNews(page + 1);
+    updateNews();
+    window.scrollTo(0, 0);
   };
 
+  if (error) {
+    return (
+      <div className="container my-3">
+        <h1 className="text-center">{error}</h1>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="container my-3">
+        <h1 className="text-center">Loading...</h1>
+      </div>
+    );
+  }
+
   return (
-    <div></div>
-    // <div className="container my-3">
-    //   <h1 className="text-center">NewsWave - Top Headlines</h1>
-    //   {loading && <h2 className="text-center">Loading...</h2>}
-    //   {/* <Carousels /> */}
-    //   <div className="row mt-4">
-    //     {news.map((element, i) => {
-    //       return (
-    //         <div className="col-md-4" key={i}>
-    //           <NewsItem
-    //             title={element.title ? element.title : ""}
-    //             description={element.description ? element.description : ""}
-    //             imageurl={element.image_url}
-    //             newsUrl={element.link}
-    //             author={element?.creator}
-    //             date={element.pubDate}
-    //             source={element.source_id}
-    //           />
-    //         </div>
-    //       );
-    //     })}
-    //   </div>
-    //   <div className="container d-flex justify-content-between">
-    //     <button
-    //       disabled={page <= 1}
-    //       type="button"
-    //       className="btn btn-dark"
-    //       onClick={() => handlePrevClick()}
-    //     >
-    //       &larr; Previous
-    //     </button>
-    //     <button
-    //       disabled={page + 1 > Math.ceil(totalResults / 12)}
-    //       type="button"
-    //       className="btn btn-dark"
-    //       onClick={() => handleNextClick()}
-    //     >
-    //       Next &rarr;
-    //     </button>
-    //   </div>
-    // </div>
+    <div className="container my-3">
+      {" "}
+      <h1 className="text-center">NewsWave - Top Headlines</h1>
+      <div className="row mt-4">
+        {news.map((element, i) => {
+          return (
+            <div className="col-md-4 my-3" key={i}>
+              <NewsItem
+                title={element.headline.main ? element.headline.main : ""}
+                description={element.lead_paragraph}
+                imageurl={element.multimedia?.[0]?.url}
+                newsUrl={element.web_url}
+                author={element.byline.original}
+                date={element.pub_date}
+                source={element.source}
+              />
+            </div>
+          );
+        })}
+      </div>
+      {news.length ? (
+        <div className="d-flex justify-content-between">
+          <button
+            disabled={page <= 1}
+            type="button"
+            className="btn btn-dark"
+            onClick={handlePrevClick}
+          >
+            &larr; Previous
+          </button>
+          <button
+            type="button"
+            className="btn btn-dark"
+            onClick={handleNextClick}
+          >
+            Next &rarr;
+          </button>
+        </div>
+      ) : null}
+    </div>
   );
 };
 
