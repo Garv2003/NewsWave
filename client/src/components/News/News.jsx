@@ -19,20 +19,19 @@ const News = () => {
   const updateNews = async () => {
     setLoading(true);
 
-    const data = await axios.get(
-      "https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1"
-    );
-
-    console.log(data);
-
     const data1 = axios.get(
       "https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en"
     );
     console.log(data1);
 
+    const data = axios.get(
+      "https://api.nytimes.com/svc/search/v2/articlesearch.json?q=election&page=10&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#"
+    );
+
+    console.log(data);
+
     // axios
     //   .get(
-    //     // `https://newsapi.org/v2/top-headlines?country=in&apiKey=037b3cfbc8564da49d82315682e5cdb1&page=${pagecurr}&pageSize=12`
     //     `https://newsdata.io/api/1/news?apikey=pub_39752dc3efe61ac650bd34bcac3643ba5df30&language=en&size=${Size}`
     //   )
     //   .then((response) => {
