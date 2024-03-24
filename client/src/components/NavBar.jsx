@@ -1,11 +1,9 @@
-import Button from "react-bootstrap/Button";
-import Container from "react-bootstrap/Container";
-import Form from "react-bootstrap/Form";
-import Nav from "react-bootstrap/Nav";
+import { Container, Button, Form, Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
-const NavBar = () => {
+const NavBar = ({ setSearch, search, handleSearch }) => {
   return (
     <Navbar expand="lg" className="bg-black text-white">
       <Container fluid>
@@ -22,10 +20,7 @@ const NavBar = () => {
             navbarScroll
           >
             <Nav>
-              <Link
-                to="/login"
-                className="text-white text-decoration-none fs-6"
-              >
+              <Link to="/" className="text-white text-decoration-none fs-6">
                 General
               </Link>
             </Nav>
@@ -64,12 +59,21 @@ const NavBar = () => {
               </Link>
             </Nav>
           </Nav>
-          <Form className="d-flex">
+          <Form
+            className="d-flex"
+            onSubmit={(e) => {
+              e.preventDefault();
+              console.log("searching");
+              handleSearch();
+            }}
+          >
             <Form.Control
               type="search"
               placeholder="Search"
               className="me-2"
               aria-label="Search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
             <Button variant="outline-primary">Search</Button>
           </Form>
@@ -77,6 +81,12 @@ const NavBar = () => {
       </Container>
     </Navbar>
   );
+};
+
+NavBar.propTypes = {
+  setSearch: PropTypes.func.isRequired,
+  search: PropTypes.string.isRequired,
+  handleSearch: PropTypes.func.isRequired,
 };
 
 export default NavBar;

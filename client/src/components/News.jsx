@@ -1,38 +1,17 @@
-import { useEffect, useState } from "react";
-import NewsItem from "../NewsItem/NewsItem";
-import axios from "axios";
+import { useEffect } from "react";
+import NewsItem from "./NewsItem";
+import Loader from "./Loader";
+import PropTypes from "prop-types";
 
-const News = () => {
-  const [news, setNews] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-
+const News = ({ news, loading, error, page, setPage, updateNews }) => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
-  };
-
-  const updateNews = async () => {
-    try {
-      setLoading(true);
-      const data = await axios.get(
-        `https://api.nytimes.com/svc/search/v2/articlesearch.json?q=general&page=${page}&api-key=AGjS8Eh5M6UNdryEfKHtY6OxBOHclQLc#`
-      );
-      console.log(data);
-      setNews(data.data.response.docs);
-      setLoading(false);
-    } catch (error) {
-      setNews([]);
-      setLoading(false);
-      setError("Something went wrong! Please try again later.");
-    }
   };
 
   useEffect(() => {
     document.title = `${capitalizeFirstLetter(
       "NewsWave"
     )} - ${capitalizeFirstLetter("Home")}`;
-    updateNews();
   }, []);
 
   const handlePrevClick = async () => {
@@ -49,16 +28,35 @@ const News = () => {
 
   if (error) {
     return (
-      <div className="container my-3">
-        <h1 className="text-center">{error}</h1>
+      <div
+        className="container my-3"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "calc(100vh - 150px)",
+        }}
+      >
+        <h1 className="text-center">{error.message}</h1>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="container my-3">
-        <h1 className="text-center">Loading...</h1>
+      <div
+        className="container my-3"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "calc(100vh - 150px)",
+        }}
+      >
+        <h3 className="text-center">Fetching News... Please Wait!</h3>
+        <Loader />
       </div>
     );
   }
@@ -68,7 +66,7 @@ const News = () => {
       {" "}
       <h1 className="text-center">NewsWave - Top Headlines</h1>
       <div className="row mt-4">
-        {news.map((element, i) => {
+        {news?.map((element, i) => {
           return (
             <div className="col-md-4 my-3" key={i}>
               <NewsItem
@@ -84,10 +82,10 @@ const News = () => {
           );
         })}
       </div>
-      {news.length ? (
+      {news?.length ? (
         <div className="d-flex justify-content-between">
           <button
-            disabled={page <= 1}
+            disabled={page === 0}
             type="button"
             className="btn btn-dark"
             onClick={handlePrevClick}
@@ -98,6 +96,7 @@ const News = () => {
             type="button"
             className="btn btn-dark"
             onClick={handleNextClick}
+            disabled={page === 100}
           >
             Next &rarr;
           </button>
@@ -105,6 +104,15 @@ const News = () => {
       ) : null}
     </div>
   );
+};
+
+News.propTypes = {
+  news: PropTypes.array,
+  loading: PropTypes.bool,
+  error: PropTypes.object,
+  page: PropTypes.number,
+  setPage: PropTypes.func,
+  updateNews: PropTypes.func,
 };
 
 export default News;
