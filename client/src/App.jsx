@@ -1,6 +1,9 @@
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Home from "./pages/Home";
+import Search from "./pages/Search";
+import Profile from "./pages/Profile";
+import NotFound from "./pages/NotFound";
 import { Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 
@@ -13,7 +16,9 @@ const App = () => {
         <Route exact path="/:category" element={<Home />} />
         <Route exact path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="*" element={<h1>404 Not Found</h1>} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

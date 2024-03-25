@@ -1,9 +1,14 @@
-import { Container, Button, Form, Nav } from "react-bootstrap";
+import { Container, Button, Nav } from "react-bootstrap";
 import Navbar from "react-bootstrap/Navbar";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import { Link, useNavigate } from "react-router-dom";
 
-const NavBar = ({ setSearch, search, handleSearch }) => {
+const NavBar = () => {
+  const navigate = useNavigate();
+
+  const handleSearch = () => {
+    navigate("/search");
+  };
+
   return (
     <Navbar expand="lg" className="bg-black text-white">
       <Container fluid>
@@ -59,34 +64,13 @@ const NavBar = ({ setSearch, search, handleSearch }) => {
               </Link>
             </Nav>
           </Nav>
-          <Form
-            className="d-flex"
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log("searching");
-              handleSearch();
-            }}
-          >
-            <Form.Control
-              type="search"
-              placeholder="Search"
-              className="me-2"
-              aria-label="Search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <Button variant="outline-primary">Search</Button>
-          </Form>
+          <Button variant="outline-primary" onClick={handleSearch}>
+            Search
+          </Button>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
-};
-
-NavBar.propTypes = {
-  setSearch: PropTypes.func.isRequired,
-  search: PropTypes.string.isRequired,
-  handleSearch: PropTypes.func.isRequired,
 };
 
 export default NavBar;

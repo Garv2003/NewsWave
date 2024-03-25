@@ -15,7 +15,7 @@ const fastify = Fastify({
 fastify.register(helmet, { contentSecurityPolicy: false });
 
 fastify.register(cors, {
-  origin: "process.env.CLIENT_URL",
+  origin: process.env.CLIENT_URL,
   methods: "GET,PUT,POST,DELETE",
 });
 
