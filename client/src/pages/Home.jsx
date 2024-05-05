@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
-import News from "../components/News";
+import { NavBar, News, Carousel, Footer } from "../components";
 import LoadingBar from "react-top-loading-bar";
-import Footer from "../components/Footer";
-import Carousel from "../components/Carousel";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "react-router-dom";
