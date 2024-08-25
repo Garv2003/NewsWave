@@ -10,6 +10,7 @@ export default function SignUp() {
     e.preventDefault();
     console.log("Form submitted");
   };
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-zinc-900">
       <div className="w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
