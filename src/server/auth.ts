@@ -12,7 +12,7 @@ import { db } from "~/server/db";
 import {
   accounts,
   sessions,
-  users,
+  user,
   verificationTokens,
 } from "~/server/db/schema";
 
@@ -35,20 +35,12 @@ export const authOptions: NextAuthOptions = {
     }),
   },
   adapter: DrizzleAdapter(db, {
-    usersTable: users,
+    usersTable: user,
     accountsTable: accounts,
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }) as Adapter,
-  providers: [
-    CredentialsProvider({
-      name: "Credentials",
-      credentials: {
-        email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" },
-      },
-    }),
-  ],
+  providers: [],
 };
 
 export const getServerAuthSession = () => getServerSession(authOptions);

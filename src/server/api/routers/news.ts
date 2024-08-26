@@ -5,30 +5,84 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
-import { posts } from "~/server/db/schema";
+import { TRPCError } from "@trpc/server";
+import { post } from "~/server/db/schema";
+import type { NewsProps } from "~/types";
+import { env } from "~/env";
+import { eq } from 'drizzle-orm';
 
 export const newsRouter = createTRPCRouter({
   news: publicProcedure.query(async () => {
-    const news = await fetch("https://newsapi.org/v2/everything?q=bitcoin&apiKey=0eae13d16f9e432883c96d192a16f11d");
-    const newsJson = await news.json();
-    return newsJson;
+    try {
+      const news = await fetch(`https://newsapi.org/v2/everything?q=general&apiKey=${env.NEWS_API_KEY}`);
+      const newsJson = await news.json() as NewsProps;
+      return newsJson;
+    }
+    catch (err) {
+      console.error(err);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong",
+      });
+    }
   }),
 
   create: protectedProcedure
-    .input(z.object({ name: z.string().min(1), url: z.string().min(1) }))
+    .input(z.object({
+      name: z.string(),
+      author: z.string(),
+      title: z.string(),
+      description: z.string(),
+      url: z.string(),
+      urlToImage: z.string(),
+      publishedAt: z.string(),
+      content: z.string(),
+    }))
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.insert(posts).values({
-        name: input.name,
-        url: input.url,
-        createdById: ctx.session.user.id,
-      });
+      try {
+
+        const postExist = await ctx.db.select().from(post).where(eq(post.url, input.url));
+
+        if (postExist) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Post already exists",
+          });
+        }
+
+        await ctx.db.insert(post).values({
+          createdById: ctx.session?.user.id,
+          name: input.name,
+          author: input.author,
+          title: input.title,
+          description: input.description,
+          url: input.url,
+          urlToImage: input.urlToImage,
+          publishedAt: input.publishedAt,
+          content: input.content,
+        })
+      }
+      catch (err) {
+        console.error(err);
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Something went wrong",
+        });
+      }
     }),
 
   getPost: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.query.posts.findMany({
-      orderBy: (posts, { desc }) => [desc(posts.createdAt)],
-    });
-
-    return post ?? null;
+    try {
+      const posts = await ctx.db.select().from(post).where(eq(post.createdById, ctx.session?.user.id));
+      return posts ?? null;
+    }
+    catch (err) {
+      console.error(err);
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Something went wrong",
+      });
+    }
   }),
 });
+

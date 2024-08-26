@@ -12,5 +12,11 @@ type BlogProps = {
     content: string;
 };
 
+type NewsProps = {
+    status: string;
+    totalResults: number;
+    articles: BlogProps[];
+};
 
-export type { BlogProps };
+
+export type { BlogProps, NewsProps };

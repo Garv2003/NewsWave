@@ -5,6 +5,7 @@ import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { HydrateClient } from "~/trpc/server";
+import SessionWrapper from "~/components/custom/SessionWrapper";
 
 export const metadata: Metadata = {
   title: "NewsWave",
@@ -18,9 +19,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-        <TRPCReactProvider>
-          <HydrateClient>{children}</HydrateClient>
-        </TRPCReactProvider>
+        <SessionWrapper>
+          <TRPCReactProvider>
+            <HydrateClient>{children}</HydrateClient>
+          </TRPCReactProvider>
+        </SessionWrapper>
       </body>
     </html>
   );
