@@ -1,34 +1,38 @@
 "use client";
-import {
-  Grid,
-  PaginationBar,
-  Footer,
-  NavBar,
-  Slider,
-} from "~/components/custom";
+import { PaginationBar } from "~/components/custom";
+import { Grid, NavBar, Footer } from "~/layout";
 import { api } from "~/trpc/react";
-
+import { useState } from "react";
+import { useSession } from "next-auth/react";
 export default function Home() {
-  const blogs = api.news.news.useQuery();
+  const { data: session } = useSession();
 
-  if (blogs.isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (blogs.error) {
-    return (
-      <div>
-        Error: {blogs.error ? blogs.error.message : "An error occurred"}
-      </div>
-    );
-  }
+  const [category, setCategory] = useState("general");
+  const [page, setPage] = useState(1);
+  const blogs = api.news.news.useQuery({ category, page });
 
   return (
-    <main className="flex min-h-screen w-full flex-col items-center justify-center">
-      <NavBar isProfile={false} />
-      <Slider />
-      <Grid blogs={blogs.data.articles} />
-      <PaginationBar />
+    <main className="flex min-h-screen w-full flex-col items-center justify-between">
+      <NavBar isProfile={false} setCategory={setCategory} />
+      {blogs.isLoading ? (
+        <div className="flex items-center justify-center">Loading...</div>
+      ) : blogs.isError ? (
+        <div className="flex items-center justify-center">
+          Error: {blogs.error.message}
+        </div>
+      ) : (
+        <>
+          <Grid
+            blogs={blogs.data?.articles ?? []}
+            isSaved={session?.user ? false : true}
+          />
+          <PaginationBar
+            page={page}
+            setPage={setPage}
+            totalResults={blogs.data?.totalResults ?? 0}
+          />
+        </>
+      )}
       <Footer />
     </main>
   );

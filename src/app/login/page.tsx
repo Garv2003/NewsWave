@@ -4,12 +4,49 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { cn } from "~/lib/utils";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useToast } from "~/components/ui/use-toast";
+import { LoginSchema, LoginFormData } from "~/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const {
+    register: login,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    resolver: zodResolver(LoginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const response = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (response && !response.ok) {
+        toast({
+          title: response.error ?? "Login Failed",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({ title: "Login Successful" });
+      router.push("/profile");
+    } catch (error) {
+      toast({ title: "Login Failed", variant: "destructive" });
+    }
   };
+
   return (
     <div className="flex h-screen items-center justify-center bg-gray-50 dark:bg-zinc-900">
       <div className="w-full max-w-md rounded-none bg-white p-4 shadow-input dark:bg-black md:rounded-2xl md:p-8">
@@ -20,18 +57,38 @@ export default function Login() {
           Login to your account
         </p>
 
-        <form className="my-8" onSubmit={handleSubmit}>
+        <form className="my-8" onSubmit={handleSubmit(onSubmit)}>
           <LabelInputContainer className="mb-4">
             <Label htmlFor="email">Email Address</Label>
-            <Input id="email" placeholder="ethanhunt@gmail.com" type="email" />
+            <Input
+              id="email"
+              placeholder="ethanhunt@gmail.com"
+              type="email"
+              {...login("email")}
+            />
+            {errors.email && (
+              <span className="text-xs text-red-500 dark:text-red-400">
+                {errors.email.message}
+              </span>
+            )}
           </LabelInputContainer>
           <LabelInputContainer className="mb-3">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" placeholder="••••••••" type="password" />
+            <Input
+              id="password"
+              placeholder="••••••••"
+              type="password"
+              {...login("password")}
+            />
+            {errors.password && (
+              <span className="text-xs text-red-500 dark:text-red-400">
+                {errors.password.message}
+              </span>
+            )}
           </LabelInputContainer>
 
           <span className="pb-4 text-sm text-neutral-600 dark:text-neutral-300">
-            Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
             <Link href="/signup" className="text-LG font-bold text-black">
               Sign up
             </Link>

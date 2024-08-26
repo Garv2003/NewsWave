@@ -1,4 +1,5 @@
 type BlogProps = {
+    id: string;
     source: {
         id: string;
         name: string;
@@ -18,5 +19,15 @@ type NewsProps = {
     articles: BlogProps[];
 };
 
+type User = {
+    id: string;
+    firstname: string;
+    lastname: string;
+    email: string;
+    bio: string;
+    password: string;
+    emailVerified: Date | null;
+    image: string | null;
+}
 
-export type { BlogProps, NewsProps };
+export type { BlogProps, NewsProps, User };

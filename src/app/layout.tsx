@@ -2,10 +2,10 @@ import "~/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
-
 import { TRPCReactProvider } from "~/trpc/react";
 import { HydrateClient } from "~/trpc/server";
-import SessionWrapper from "~/components/custom/SessionWrapper";
+import { SessionWrapper, ThemeProvider } from "~/layout";
+import { Toaster } from "~/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "NewsWave",
@@ -15,13 +15,25 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
-      <body>
+    <html lang="en" className={GeistSans.variable} suppressHydrationWarning>
+      <body className="min-h-screen bg-white text-black dark:bg-black dark:text-white">
         <SessionWrapper>
           <TRPCReactProvider>
-            <HydrateClient>{children}</HydrateClient>
+            <HydrateClient>
+              <ThemeProvider
+                attribute="class"
+                defaultTheme="system"
+                enableSystem
+                // disableTransitionOnChange
+              >
+                <Toaster />
+                {children}
+              </ThemeProvider>
+            </HydrateClient>
           </TRPCReactProvider>
         </SessionWrapper>
       </body>

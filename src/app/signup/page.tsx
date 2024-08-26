@@ -4,11 +4,48 @@ import { Label } from "../../components/ui/label";
 import { Input } from "../../components/ui/input";
 import { cn } from "~/lib/utils";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { useToast } from "~/components/ui/use-toast";
+import { RegisterSchema, FormData } from "~/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export default function SignUp() {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Form submitted");
+  const { toast } = useToast();
+  const router = useRouter();
+
+  const result = api.user.register.useMutation({
+    onError: (error) => {
+      toast({
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        description: "Account created successfully",
+      });
+      router.push("/login");
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    resolver: zodResolver(RegisterSchema),
+  });
+
+  const onSubmit = (data: FormData) => {
+    result.mutate({
+      email: data.email,
+      password: data.password,
+      firstName: data.firstName,
+      lastName: data.lastName,
+    });
   };
 
   return (
@@ -21,32 +58,80 @@ export default function SignUp() {
           Sign up for an account
         </p>
 
-        <form className="my-8" onSubmit={handleSubmit}>
+        <form className="my-8" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-4 flex flex-col space-y-2 md:flex-row md:space-x-2 md:space-y-0">
             <LabelInputContainer>
               <Label htmlFor="firstname">First name</Label>
-              <Input id="firstname" placeholder="Ethan" type="text" />
+              <Input
+                id="firstname"
+                placeholder="Ethan"
+                type="text"
+                {...register("firstName")}
+              />
+              {errors.firstName && (
+                <span className="mb-2 text-sm text-red-500">
+                  {errors.firstName.message}
+                </span>
+              )}
             </LabelInputContainer>
             <LabelInputContainer>
               <Label htmlFor="lastname">Last name</Label>
-              <Input id="lastname" placeholder="Hunt" type="text" />
+              <Input
+                id="lastname"
+                placeholder="Hunt"
+                type="text"
+                {...register("lastName")}
+              />
+              {errors.lastName && (
+                <span className="mb-2 text-sm text-red-500">
+                  {errors.lastName.message}
+                </span>
+              )}
             </LabelInputContainer>
           </div>
           <LabelInputContainer className="mb-4">
             <Label htmlFor="email">Email Address</Label>
-            <Input id="email" placeholder="ethanhunt@gmail.com" type="email" />
+            <Input
+              id="email"
+              placeholder="ethanhunt@gmail.com"
+              type="email"
+              {...register("email")}
+            />
+            {errors.email && (
+              <span className="mb-2 text-sm text-red-500">
+                {errors.email.message}
+              </span>
+            )}
           </LabelInputContainer>
+
           <LabelInputContainer className="mb-4">
             <Label htmlFor="password">Password</Label>
-            <Input id="password" placeholder="••••••••" type="password" />
+            <Input
+              id="password"
+              placeholder="••••••••"
+              type="password"
+              {...register("password")}
+            />{" "}
+            {errors.password && (
+              <span className="mb-2 text-sm text-red-500">
+                {errors.password.message}
+              </span>
+            )}
           </LabelInputContainer>
+
           <LabelInputContainer className="mb-3">
             <Label htmlFor="confirmPassword">Confirm Password</Label>
             <Input
               id="confirmPassword"
               placeholder="••••••••"
               type="password"
-            />
+              {...register("confirmPassword")}
+            />{" "}
+            {errors.confirmPassword && (
+              <span className="mb-2 text-sm text-red-500">
+                {errors.confirmPassword.message}
+              </span>
+            )}
           </LabelInputContainer>
 
           <span className="pb-4 text-sm text-neutral-600 dark:text-neutral-300">
@@ -59,6 +144,7 @@ export default function SignUp() {
           <button
             className="group/btn relative mt-4 block h-10 w-full rounded-md bg-gradient-to-br from-black to-neutral-600 font-medium text-white shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:bg-zinc-800 dark:from-zinc-900 dark:to-zinc-900 dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
+            disabled={result.isPending}
           >
             Sign up &rarr;
             <BottomGradient />

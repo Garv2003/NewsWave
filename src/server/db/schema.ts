@@ -1,6 +1,5 @@
 import { relations, sql } from "drizzle-orm";
 import {
-  bigint,
   index,
   int,
   mysqlTableCreator,
@@ -14,21 +13,21 @@ import { type AdapterAccount } from "next-auth/adapters";
 
 export const createTable = mysqlTableCreator((name) => `client_${name}`);
 
-export const post = createTable(
+export const posts = createTable(
   "post",
   {
     id: varchar("id", { length: 255 }).notNull().primaryKey().$defaultFn(() => crypto.randomUUID()),
     name: varchar("name", { length: 256 }),
     author: varchar("author", { length: 256 }),
-    title: varchar("name", { length: 256 }),
+    title: varchar("title", { length: 256 }),
     description: text("description"),
     url: varchar("url", { length: 256 }),
     urlToImage: varchar("url_to_image", { length: 256 }),
     content: text("content"),
-    publishedAt: timestamp("published_at"),
+    publishedAt: varchar("published_at", { length: 256 }),
     createdById: varchar("created_by", { length: 255 })
       .notNull()
-      .references(() => user.id),
+      .references(() => users.id),
     createdAt: timestamp("created_at")
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
@@ -40,13 +39,16 @@ export const post = createTable(
   })
 );
 
-export const user = createTable("user", {
+export const users = createTable("user", {
   id: varchar("id", { length: 255 })
     .notNull()
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
-  name: varchar("name", { length: 255 }),
+  firstname: varchar("firstname", { length: 255 }).notNull(),
+  lastname: varchar("lastname", { length: 255 }).notNull(),
   email: varchar("email", { length: 255 }).notNull(),
+  bio: text("bio"),
+  password: varchar("password", { length: 255 }).notNull(),
   emailVerified: timestamp("email_verified", {
     mode: "date",
     fsp: 3,
@@ -54,7 +56,7 @@ export const user = createTable("user", {
   image: varchar("image", { length: 255 }),
 });
 
-export const usersRelations = relations(user, ({ many }) => ({
+export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
 }));
@@ -64,7 +66,7 @@ export const accounts = createTable(
   {
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => user.id),
+      .references(() => users.id),
     type: varchar("type", { length: 255 })
       .$type<AdapterAccount["type"]>()
       .notNull(),
@@ -89,7 +91,7 @@ export const accounts = createTable(
 );
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
-  user: one(user, { fields: [accounts.userId], references: [user.id] }),
+  user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
 
 export const sessions = createTable(
@@ -100,7 +102,7 @@ export const sessions = createTable(
       .primaryKey(),
     userId: varchar("user_id", { length: 255 })
       .notNull()
-      .references(() => user.id),
+      .references(() => users.id),
     expires: timestamp("expires", { mode: "date" }).notNull(),
   },
   (session) => ({
@@ -109,7 +111,7 @@ export const sessions = createTable(
 );
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
-  user: one(user, { fields: [sessions.userId], references: [user.id] }),
+  user: one(users, { fields: [sessions.userId], references: [users.id] }),
 }));
 
 export const verificationTokens = createTable(

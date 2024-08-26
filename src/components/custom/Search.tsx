@@ -2,7 +2,11 @@
 
 import { PlaceholdersAndVanishInput } from "../ui/placeholders-and-vanish-input";
 
-export default function PlaceholdersAndVanishInputDemo() {
+export default function Search({
+  setCategory,
+}: {
+  setCategory: React.Dispatch<React.SetStateAction<string>>;
+}) {
   const placeholders = [
     "What's the first rule of Fight Club?",
     "Who is Tyler Durden?",
@@ -12,11 +16,14 @@ export default function PlaceholdersAndVanishInputDemo() {
   ];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
   };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("submitted");
+    const inputElement = e.currentTarget.elements[0] as HTMLInputElement;
+    console.log(inputElement.value);
+    setCategory(inputElement.value);
   };
 
   return (

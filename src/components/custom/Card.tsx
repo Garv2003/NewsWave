@@ -4,53 +4,114 @@ import Image from "next/image";
 import Link from "next/link";
 import { FollowerPointerCard } from "../ui/following-pointer";
 import type { BlogProps } from "~/types";
+import { BookMarked, Trash2 } from "lucide-react";
+import { api } from "~/trpc/react";
+import { useToast } from "../ui/use-toast";
+import { Button } from "../ui/button";
 
 function ConvertDate(date: string) {
   const d = new Date(date);
   return d.toDateString();
 }
 
-export default function Card({ blog }: { blog: BlogProps }) {
+export default function Card({
+  blog,
+  isSaved,
+  authorizedDelete,
+}: {
+  blog: BlogProps;
+  isSaved: boolean;
+  authorizedDelete?: boolean;
+}) {
+  const { toast } = useToast();
+  const result = api.news.create.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "News Saved Successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteNews = api.news.deleteSavedNews.useMutation({
+    onSuccess: () => {
+      toast({
+        title: "News Deleted Successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const savedNews = () => {
+    result.mutate({
+      name: blog.source.name,
+      author: blog.author ?? "Unknown",
+      title: blog.title,
+      description: blog.description,
+      url: blog.url,
+      urlToImage: blog.urlToImage,
+      publishedAt: blog.publishedAt,
+      content: blog.content,
+    });
+  };
+
+  const deleteSavedNews = () => {
+    deleteNews.mutate({ id: blog.id });
+    window.location.reload();
+  };
+
   return (
-    <div className="mx-auto w-80">
-      <FollowerPointerCard
-        title={
-          <TitleComponent
-            title={blog.author}
-            // avatar={blogContent.authorAvatar}
-          />
-        }
-      >
-        <div className="group relative h-full overflow-hidden rounded-2xl border border-zinc-100 bg-white shadow-xl transition duration-200">
-          <div className="aspect-w-16 aspect-h-10 xl:aspect-w-16 xl:aspect-h-10 relative w-full overflow-hidden rounded-tl-lg rounded-tr-lg bg-gray-100">
+    <div className="mx-auto w-80 bg-white dark:bg-black">
+      <div className="group relative h-full overflow-hidden rounded-2xl border border-gray-300 bg-white shadow-xl transition duration-200 dark:border-gray-700 dark:bg-black">
+        <FollowerPointerCard title={<TitleComponent title={blog.author} />}>
+          <div className="relative w-full overflow-hidden rounded-tl-lg rounded-tr-lg bg-gray-100 dark:bg-black">
             <Image
               src={blog.urlToImage ?? "/favicon.png"}
               width={500}
               height={200}
               alt="thumbnail"
-              className={`h-50 sm:h-50 w-full transform object-cover transition duration-200 group-hover:scale-95 group-hover:rounded-2xl md:h-60 lg:h-80 xl:h-80`}
+              className="h-50 sm:h-50 w-full transform object-cover transition duration-200 group-hover:scale-95 group-hover:rounded-2xl md:h-60 lg:h-80 xl:h-80"
             />
           </div>
-          <div className="p-4">
-            <h2 className="my-4 text-lg font-bold text-zinc-700">
-              {blog.title}
-            </h2>
-            <h2 className="my-4 text-sm font-normal text-zinc-500">
-              {blog.content}
-            </h2>
-            <div className="mt-10 flex flex-row items-center justify-between">
-              <span className="text-sm text-gray-500">
-                {ConvertDate(blog.publishedAt)}
-              </span>
-              <Link href={blog.url} target="_blank">
-                <div className="relative z-10 block rounded-xl bg-black px-6 py-2 text-xs font-bold text-white">
-                  Read More
-                </div>
-              </Link>
-            </div>
+        </FollowerPointerCard>
+
+        <div className="p-4">
+          <h2 className="my-4 line-clamp-2 text-lg font-bold text-gray-900 dark:text-gray-200">
+            {blog.title}
+          </h2>
+          <h2 className="my-4 line-clamp-3 text-sm font-normal text-gray-600 dark:text-gray-400">
+            {blog.content}
+          </h2>
+          <div className="mt-10 flex flex-row items-center justify-between">
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {ConvertDate(blog.publishedAt)}
+            </span>
+            {!isSaved && (
+              <button onClick={savedNews} className="cursor-pointer">
+                <BookMarked className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+              </button>
+            )}
+            {authorizedDelete && (
+              <button onClick={deleteSavedNews} className="cursor-pointer">
+                <Trash2 className="h-6 w-6 text-gray-500 dark:text-gray-400" />
+              </button>
+            )}
+            <Link href={blog.url} target="_blank">
+              <Button variant="outline">Read More</Button>
+            </Link>
           </div>
         </div>
-      </FollowerPointerCard>
+      </div>
     </div>
   );
 }
