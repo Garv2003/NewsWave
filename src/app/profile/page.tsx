@@ -1,6 +1,6 @@
 "use client";
 
-import { UserDetails } from "~/components/custom";
+import { UserDetails, ProfileLoader, GridLoader } from "~/components/custom";
 import { Footer, Grid, NavBar } from "~/layout";
 import { api } from "~/trpc/react";
 import type { BlogProps, User } from "~/types";
@@ -12,9 +12,10 @@ export default function Profile() {
     <main className="flex min-h-screen w-full flex-col items-center justify-center">
       <NavBar isProfile={true} />
       {result.isLoading ? (
-        <div className="flex h-screen w-full items-center justify-center">
-          Loading...
-        </div>
+        <>
+          <ProfileLoader />
+          <GridLoader num={4} />
+        </>
       ) : result.isError ? (
         <div className="flex h-screen w-full items-center justify-center">
           {result.error.message}

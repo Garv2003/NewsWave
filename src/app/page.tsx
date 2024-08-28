@@ -1,9 +1,10 @@
 "use client";
-import { PaginationBar } from "~/components/custom";
+import { PaginationBar, GridLoader } from "~/components/custom";
 import { Grid, NavBar, Footer } from "~/layout";
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+
 export default function Home() {
   const { data: session } = useSession();
 
@@ -15,7 +16,7 @@ export default function Home() {
     <main className="flex min-h-screen w-full flex-col items-center justify-between">
       <NavBar isProfile={false} setCategory={setCategory} />
       {blogs.isLoading ? (
-        <div className="flex items-center justify-center">Loading...</div>
+        <GridLoader num={8} />
       ) : blogs.isError ? (
         <div className="flex items-center justify-center">
           {blogs.error.message}
