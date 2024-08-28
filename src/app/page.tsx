@@ -18,7 +18,7 @@ export default function Home() {
         <div className="flex items-center justify-center">Loading...</div>
       ) : blogs.isError ? (
         <div className="flex items-center justify-center">
-          Error: {blogs.error.message}
+          {blogs.error.message}
         </div>
       ) : (
         <>

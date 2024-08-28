@@ -17,7 +17,7 @@ export default function Profile() {
         </div>
       ) : result.isError ? (
         <div className="flex h-screen w-full items-center justify-center">
-          Error: {result.error.message}
+          {result.error.message}
         </div>
       ) : (
         <>
